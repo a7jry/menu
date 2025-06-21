@@ -1,0 +1,17 @@
+
+<!-- templates/login.html -->
+{% extends "base.html" %}
+{% block content %}
+<div class="d-flex justify-content-center align-items-center" style="min-height: 70vh;">
+    <div class="text-center p-5 bg-light rounded-3">
+        <h1 class="display-5 fw-bold">Welcome!</h1>
+        <p class="fs-4">Please log in to manage your recipes.</p>
+        <a href="{{ url_for('login') }}" class="btn btn-primary btn-lg mt-3">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-google me-2" viewBox="0 0 16 16">
+                <path d="M15.545 6.558a9.42 9.42 0 0 1 .139 1.626c0 2.434-.87 4.492-2.384 5.885h.002C11.978 15.292 10.158 16 8 16A8 8 0 1 1 8 0a7.689 7.689 0 0 1 5.352 2.082l-2.284 2.284A4.347 4.347 0 0 0 8 3.166c-2.087 0-3.86 1.408-4.492 3.25C3.21 6.574 3 6.96 3 7.5s.21 1.026.508 1.455c.632 1.84 2.405 3.25 4.492 3.25 1.257 0 2.34-.472 3.163-1.202l1.733 1.733c-.817.817-1.854 1.348-3.163 1.348-2.645 0-4.854-1.935-5.462-4.577a5.443 5.443 0 0 1 0-2.846C2.545 4.316 4.754 2.5 7.399 2.5c1.37 0 2.583.487 3.546 1.371l2.6-2.6C12.095 1.046 10.282 0 8 0Z"/>
+            </svg>
+            Login with Google
+        </a>
+    </div>
+</div>
+{% endblock %}

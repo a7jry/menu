@@ -3,18 +3,24 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <div class="p-5 mb-4 bg-light rounded-3 text-center">
-        <div class="container-fluid py-5">
-            <h1 class="display-5 fw-bold">Welcome to Your Personal Cookbook</h1>
-            <p class="fs-4">A place to store and organize all your favorite recipes.</p>
-        </div>
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="display-6">My Recipes</h1>
+        <a href="{{ url_for('add_recipe') }}" class="btn btn-primary">Add New Recipe</a>
     </div>
+    
+    <!-- FIX: Corrected the logic to check if there are any recipes -->
+    {% if not recipes.values()|sum(start=[]) %}
+        <div class="text-center p-5 bg-light rounded-3">
+            <p class="fs-4">You don't have any recipes yet.</p>
+            <a href="{{ url_for('add_recipe') }}" class="btn btn-success btn-lg">Add Your First Recipe!</a>
+        </div>
+    {% endif %}
 
     {% for category, items in recipes.items() %}
         {% if items %}
             <div class="category-section mb-5">
                 <h2>{{ category }}</h2>
-                <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+                <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-3 row-cols-xl-4 g-4">
                     {% for recipe in items %}
                         <div class="col">
                              <a href="{{ url_for('view_recipe', recipe_id=recipe.id) }}" class="card-link">
@@ -24,9 +30,9 @@
                                     {% else %}
                                         <img src="https://placehold.co/600x400/e9ecef/6c757d?text=No+Image" class="card-img-top" alt="No image available">
                                     {% endif %}
-                                    <div class="card-body">
+                                    <div class="card-body d-flex flex-column">
                                         <h5 class="card-title">{{ recipe.title }}</h5>
-                                        <p class="card-text text-muted"><small>Prep Time: {{ recipe.prep_time }}</small></p>
+                                        <p class="card-text text-muted mt-auto"><small>Prep Time: {{ recipe.prep_time }}</small></p>
                                     </div>
                                 </div>
                             </a>

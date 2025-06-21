@@ -1,0 +1,40 @@
+
+<!-- templates/index.html -->
+{% extends "base.html" %}
+
+{% block content %}
+    <div class="p-5 mb-4 bg-light rounded-3 text-center">
+        <div class="container-fluid py-5">
+            <h1 class="display-5 fw-bold">Welcome to Your Personal Cookbook</h1>
+            <p class="fs-4">A place to store and organize all your favorite recipes.</p>
+        </div>
+    </div>
+
+    {% for category, items in recipes.items() %}
+        {% if items %}
+            <div class="category-section mb-5">
+                <h2>{{ category }}</h2>
+                <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+                    {% for recipe in items %}
+                        <div class="col">
+                             <a href="{{ url_for('view_recipe', recipe_id=recipe.id) }}" class="card-link">
+                                <div class="card h-100 shadow-sm recipe-card">
+                                    {% if recipe.image_filename %}
+                                        <img src="{{ url_for('static', filename='uploads/' + recipe.image_filename) }}" class="card-img-top" alt="{{ recipe.title }}">
+                                    {% else %}
+                                        <img src="https://placehold.co/600x400/e9ecef/6c757d?text=No+Image" class="card-img-top" alt="No image available">
+                                    {% endif %}
+                                    <div class="card-body">
+                                        <h5 class="card-title">{{ recipe.title }}</h5>
+                                        <p class="card-text text-muted"><small>Prep Time: {{ recipe.prep_time }}</small></p>
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        {% endif %}
+    {% endfor %}
+
+{% endblock %}

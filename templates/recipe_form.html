@@ -1,0 +1,132 @@
+<!-- templates/recipe_form.html -->
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card p-4 p-md-5 shadow-lg">
+                <h1 class="text-center mb-4">{{ form_action }}</h1>
+                <form id="recipe-form" method="post" enctype="multipart/form-data">
+                    <div class="mb-3">
+                        <label for="title" class="form-label">Recipe Title</label>
+                        <input type="text" class="form-control" id="title" name="title" value="{{ recipe.title if recipe else '' }}" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="category" class="form-label">Category</label>
+                        <select class="form-select" id="category" name="category" required>
+                            <option value="Appetizer" {% if recipe and recipe.category == 'Appetizer' %}selected{% endif %}>Appetizer</option>
+                            <option value="Main" {% if recipe and recipe.category == 'Main' %}selected{% endif %}>Main</option>
+                            <option value="Dessert" {% if recipe and recipe.category == 'Dessert' %}selected{% endif %}>Dessert</option>
+                            <option value="Drink" {% if recipe and recipe.category == 'Drink' %}selected{% endif %}>Drink</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="prep_time" class="form-label">Preparation Time</label>
+                        <input type="text" class="form-control" id="prep_time" name="prep_time" value="{{ recipe.prep_time if recipe else '' }}" placeholder="e.g., 30 minutes" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="ingredients" class="form-label">Ingredients</label>
+                        <textarea class="form-control" id="ingredients" name="ingredients" rows="8" placeholder="List each ingredient on a new line." required>{{ recipe.ingredients if recipe else '' }}</textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label for="instructions" class="form-label">Instructions</label>
+                        <textarea class="form-control" id="instructions" name="instructions" rows="12" placeholder="List each step on a new line." required>{{ recipe.instructions if recipe else '' }}</textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label for="notes" class="form-label">Notes (Optional)</label>
+                        <textarea class="form-control" id="notes" name="notes" rows="4" placeholder="Any additional tips or variations.">{{ recipe.notes if recipe else '' }}</textarea>
+                    </div>
+                    <div class="mb-4">
+                        <label for="image" class="form-label">Photo (Optional)</label>
+                        {% if recipe and recipe.image_filename %}
+                            <p class="text-muted"><small>Current image:</small></p>
+                            <img src="{{ url_for('static', filename='uploads/' + recipe.image_filename) }}" alt="{{ recipe.title }}" class="img-fluid rounded mb-2" style="max-width: 200px;">
+                        {% endif %}
+                        <input type="file" class="form-control" id="image" name="image" accept="image/*,.heic,.heif">
+                    </div>
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                        <a href="{{ url_for('index') }}" class="btn btn-secondary">Cancel</a>
+                        <button type="submit" class="btn btn-primary">{{ form_action }}</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<!-- CDN for the heic2any library -->
+<script src="https://cdn.jsdelivr.net/npm/heic2any@0.0.4/dist/heic2any.min.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const recipeForm = document.getElementById('recipe-form');
+
+    recipeForm.addEventListener('submit', async function(event) {
+        event.preventDefault(); // Stop the default form submission
+
+        const submitButton = this.querySelector('button[type="submit"]');
+        const originalButtonText = submitButton.textContent;
+        const imageInput = this.querySelector('#image');
+        const file = imageInput.files[0];
+
+        // Create FormData from the form
+        const formData = new FormData(this);
+
+        // Check if a file is selected and if it's a HEIC file
+        if (file && (file.type === 'image/heic' || file.type === 'image/heif' || file.name.toLowerCase().endsWith('.heic') || file.name.toLowerCase().endsWith('.heif'))) {
+            
+            // Show a loading/converting message to the user
+            submitButton.disabled = true;
+            submitButton.textContent = 'Converting Image...';
+
+            try {
+                const convertedBlob = await heic2any({
+                    blob: file,
+                    toType: "image/jpeg",
+                    quality: 0.8,
+                });
+
+                // The original file is named 'image'. We remove it and append the new one.
+                formData.delete('image'); 
+                // Append the converted blob as a new file with a .jpg extension
+                formData.append('image', convertedBlob, file.name.replace(/\.(heic|heif)$/i, '.jpg'));
+                
+            } catch (error) {
+                console.error('HEIC conversion failed:', error);
+                alert('There was an error converting your HEIC image. Please try another format.');
+                submitButton.disabled = false;
+                submitButton.textContent = originalButtonText;
+                return; // Stop the submission
+            }
+        }
+        
+        // Use fetch to submit the FormData
+        submitButton.textContent = 'Uploading...';
+        try {
+            const response = await fetch(this.action, {
+                method: 'POST',
+                body: formData,
+                // Headers are not needed, browser sets correct multipart/form-data header
+            });
+
+            // Redirect based on the response from the server
+            if (response.ok && response.redirected) {
+                window.location.href = response.url;
+            } else {
+                 // If the server responds with an error, it might not redirect.
+                 // We reload to see any flashed messages from the server.
+                window.location.reload();
+            }
+
+        } catch (error) {
+            console.error('Form submission failed:', error);
+            alert('An error occurred while submitting the form.');
+            submitButton.disabled = false;
+            submitButton.textContent = originalButtonText;
+        }
+    });
+});
+</script>
+{% endblock %}

@@ -1,0 +1,26 @@
+# Use the same Python version you developed with
+runtime: python311 
+
+# The entrypoint tells App Engine how to start your app using gunicorn
+entrypoint: gunicorn -b :$PORT 'app:app'
+
+# This section handles automatic scaling based on traffic
+automatic_scaling:
+  min_instances: 0
+  max_instances: 1 
+  # Start with 1 max instance to stay within the free tier
+
+# IMPORTANT: You will set the actual values for these environment variables
+# in the Google Cloud Console, NOT in this file. This file just tells
+# App Engine which variables your app needs.
+env_variables:
+  # Flask App Secret Key
+  SECRET_KEY: 'YOUR_PRODUCTION_SECRET_KEY'
+
+  # Your Google OAuth Credentials
+  GOOGLE_CLIENT_ID: 'YOUR_GOOGLE_CLIENT_ID'
+  GOOGLE_CLIENT_SECRET: 'YOUR_GOOGLE_CLIENT_SECRET'
+
+  # --- Cloud SQL Database Connection String ---
+  # Replace values for: DB_USER, DB_PASS, DB_NAME, and CONNECTION_NAME
+  SQLALCHEMY_DATABASE_URI: 'postgresql+psycopg2://DB_USER:DB_PASS@/DB_NAME?host=/cloudsql/CONNECTION_NAME'

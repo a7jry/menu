@@ -10,17 +10,16 @@ automatic_scaling:
   max_instances: 1 
   # Start with 1 max instance to stay within the free tier
 
-# IMPORTANT: You will set the actual values for these environment variables
-# in the Google Cloud Console, NOT in this file. This file just tells
-# App Engine which variables your app needs.
+# For this version of App Engine, environment variables are set directly here.
+# WARNING: DO NOT COMMIT THIS FILE WITH REAL SECRETS TO A PUBLIC REPOSITORY.
 env_variables:
   # Flask App Secret Key
-  SECRET_KEY: 'YOUR_PRODUCTION_SECRET_KEY'
+  SECRET_KEY: 'PASTE_A_NEW_RANDOM_SECRET_KEY_HERE'
 
   # Your Google OAuth Credentials
-  GOOGLE_CLIENT_ID: 'YOUR_GOOGLE_CLIENT_ID'
-  GOOGLE_CLIENT_SECRET: 'YOUR_GOOGLE_CLIENT_SECRET'
+  GOOGLE_CLIENT_ID: 'PASTE_YOUR_GOOGLE_CLIENT_ID_HERE'
+  GOOGLE_CLIENT_SECRET: 'PASTE_YOUR_GOOGLE_CLIENT_SECRET_HERE'
 
   # --- Cloud SQL Database Connection String ---
-  # Replace values for: DB_USER, DB_PASS, DB_NAME, and CONNECTION_NAME
-  SQLALCHEMY_DATABASE_URI: 'postgresql+psycopg2://DB_USER:DB_PASS@/DB_NAME?host=/cloudsql/CONNECTION_NAME'
+  # Replace with your actual database connection string
+  SQLALCHEMY_DATABASE_URI: 'postgresql+psycopg2://USER:PASS@/DB_NAME?host=/cloudsql/PROJECT:REGION:INSTANCE'
